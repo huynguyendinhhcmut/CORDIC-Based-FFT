@@ -4,7 +4,7 @@ module cordic (
 	output logic [31:0] o_x, o_y
 );
 
-logic [1:0] check;
+logic [1:0] check, start_check;
 logic check1, check2, check3, check4, check5, check6;
 logic [1:0] o_check1,  o_check2, o_check3, o_check4;
 logic [1:0] o_check5,  o_check6, o_check7, o_check8;
@@ -15,6 +15,7 @@ logic [1:0] o_check20, o_check21, o_check22;
 
 logic [31:0] z1, z2, z3_1, z3_2, z4;
 
+logic [31:0] start_x, start_y, start_z;
 logic [31:0] i_x1,  o_x1,  i_y1,  o_y1,  i_z1,  o_z1;
 logic [31:0] i_x2,  o_x2,  i_y2,  o_y2,  i_z2,  o_z2;
 logic [31:0] i_x3,  o_x3,  i_y3,  o_y3,  i_z3,  o_z3;
@@ -68,8 +69,22 @@ assign check5 = check1 & check2;
 assign check6 = check3 & check4;
 assign check = {check6, check5};
 
-mux4to1 muxcheck (.i_data_0(z2), .i_data_1(z3_1), .i_data_2(z3_2), .i_data_3(z2), .i_sel(check), .o_data(z4));
+mux4to1 muxcheck (.i_data_0(z2), .i_data_1(z3_1), .i_data_2(z3_2), .i_data_3(32'b0), .i_sel(check), .o_data(z4));
 
+always_ff @(posedge i_clk or negedge i_reset) begin
+    if (~i_reset) begin
+        start_x     <= 32'b0;
+        start_y     <= 32'b0;
+        start_z     <= 32'b0;
+        start_check <= 2'b0;
+    end else begin
+        start_x     <= i_x;
+        start_y     <= i_y;
+        start_z     <= z4;
+        start_check <= check;
+    end
+end
+        
 //      ____  _                      ___  
 //     / ___|| |_ __ _  __ _  ___   / _ \ 
 //     \___ \| __/ _` |/ _` |/ _ \ | | | |
@@ -77,9 +92,9 @@ mux4to1 muxcheck (.i_data_0(z2), .i_data_1(z3_1), .i_data_2(z3_2), .i_data_3(z2)
 //     |____/ \__\__,_|\__, |\___|  \___/ 
 //                     |___/              
 
-fpu_add_sub fpu_x0 (.i_a(i_x), .i_b(i_y), .i_control(~z4[31]), .o_result(i_x1));
-fpu_add_sub fpu_y0 (.i_a(i_y), .i_b(i_x), .i_control(z4[31]), .o_result(i_y1));
-fpu_add_sub fpu_z0 (.i_a(z4), .i_b(32'b0_01111110_10010010000111111011011), .i_control(~z4[31]), .o_result(i_z1)); // arctan(2^-0) = 0.7853981634
+fpu_add_sub fpu_x0 (.i_a(start_x), .i_b(start_y), .i_control(~start_z[31]), .o_result(i_x1));
+fpu_add_sub fpu_y0 (.i_a(start_y), .i_b(start_x), .i_control(start_z[31]),  .o_result(i_y1));
+fpu_add_sub fpu_z0 (.i_a(start_z), .i_b(32'b0_01111110_10010010000111111011011), .i_control(~start_z[31]), .o_result(i_z1)); // arctan(2^-0) = 0.7853981634
 
 always_ff @(posedge i_clk or negedge i_reset) begin
 	if (~i_reset) begin
@@ -91,7 +106,7 @@ always_ff @(posedge i_clk or negedge i_reset) begin
         o_x1     <= i_x1;
         o_y1     <= i_y1;
 		o_z1     <= i_z1;
-        o_check1 <= check;
+        o_check1 <= start_check;
     end
 end
 
@@ -711,7 +726,7 @@ fpu_add_sub o_fpu_yk (.i_a(o_y_k_14), .i_b({o_y_k_14[31], shift_o_y_k_14, o_y_k_
 //     |_| \_\___||___/\__,_|_|\__| /_/   \_\__,_|/ |\__,_|___/_| |_| |_|\___|_| |_|\__|
 //                                              |__/                                    
 
-mux4to1 muxresultx (.i_data_0(x), .i_data_1({~x[31], x[30:0]}), .i_data_2(x), .i_data_3(x), .i_sel(o_check22), .o_data(o_x));
-mux4to1 muxresulty (.i_data_0(y), .i_data_1({~y[31], x[30:0]}), .i_data_2(y), .i_data_3(y), .i_sel(o_check22), .o_data(o_y));
+mux4to1 muxresultx (.i_data_0(x), .i_data_1({~x[31], x[30:0]}), .i_data_2(x), .i_data_3(32'b0), .i_sel(o_check22), .o_data(o_x));
+mux4to1 muxresulty (.i_data_0(y), .i_data_1({~y[31], y[30:0]}), .i_data_2(y), .i_data_3(32'b0), .i_sel(o_check22), .o_data(o_y));
 
 endmodule
