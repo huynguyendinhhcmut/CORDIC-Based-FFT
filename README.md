@@ -49,7 +49,31 @@ The design follows a **Pipelined Architecture** (Decimation-In-Time) consisting 
 
 ```text
 cordic-fft-fp/
-├── rtl/                # Source Verilog/SystemVerilog files
-├── tb/                 # Testbenches
-├── sim/                # Simulation scripts & waveforms
-├── scripts/            # Python scripts for Golden Reference (numpy)
+├── dv
+│   └── tb_cordic.sv
+├── rtl
+│   ├── butterfly.sv
+│   ├── cordic.sv
+│   ├── dual_port_ram.sv
+│   ├── fpu_add_sub.sv
+│   ├── fullAdder32b.sv
+│   ├── inversion_sequence.sv
+│   ├── rom_stage_10.sv
+│   ├── rom_stage_2.sv
+│   ├── rom_stage_3.sv
+│   ├── rom_stage_4.sv
+│   ├── rom_stage_5.sv
+│   ├── rom_stage_6.sv
+│   ├── rom_stage_7.sv
+│   ├── rom_stage_8.sv
+│   ├── rom_stage_9.sv
+│   └── stage_1.sv
+├── scripts
+│   └── check_cordic.py
+└── sim
+    ├── Makefile
+    ├── cordic
+    ├── cordic_wave.vcd
+    ├── rtl_files.f
+    ├── tb_cordic.txt
+    └── tb_cordic_check.txt
