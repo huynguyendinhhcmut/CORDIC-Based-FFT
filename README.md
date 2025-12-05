@@ -8,7 +8,7 @@
 ## 📌 Overview
 This repository contains the RTL implementation of a **1024-point Radix-2 Fast Fourier Transform (FFT)** processor using **IEEE 754 Single Precision Floating-Point** arithmetic.
 
-Unlike traditional fixed-point implementations, this design provides a **high dynamic range** and eliminates common overflow issues associated with fixed-point FFTs. It utilizes a **Floating-Point CORDIC (COordinate Rotation DIgital Computer)** algorithm for twiddle factor multiplication, avoiding the need for massive floating-point hardware multipliers.
+Unlike traditional fixed-point implementations, this design provides a **high dynamic range** and eliminates common overflow issues. It utilizes a **Floating-Point CORDIC (COordinate Rotation DIgital Computer)** algorithm for twiddle factor multiplication, avoiding the need for massive floating-point hardware multipliers.
 
 This project is part of my **Capstone Project 2** at [University Name].
 
@@ -18,19 +18,18 @@ The design follows a **Pipelined Architecture** (Decimation-In-Time) consisting 
 
 ### Key Components:
 1.  **Input Buffer (Ping-Pong RAM):**
-    -   Handles continuous data streaming.
-    -   Performs **Bit-Reversal** addressing to reorder input data.
-    -   Stores 32-bit Floating-Point samples (Real & Imaginary).
+    -   Handles continuous data streaming using a Ping-Pong buffer scheme.
+    -   Performs **Bit-Reversal** addressing (Inversion Sequence) to reorder input data.
+    -   Uses standard **32-bit memory blocks** for storage.
 2.  **Floating-Point Butterfly Unit:**
-    -   Performs the core Radix-2 operations (`A ± B`) using floating-point adders/subtractors.
-    -   Handles alignment and normalization stages.
+    -   Performs the core Radix-2 operations (`A ± B`) using 32-bit floating-point adders/subtractors.
 3.  **Floating-Point CORDIC Rotator:**
     -   Operates in **Vector Rotation Mode** to perform complex multiplication.
-    -   Accepts IEEE 754 inputs `(x, y)` and rotation angle `z`.
-    -   Includes pre-processing/normalization to adapt standard CORDIC iterations to floating-point data.
+    -   Accepts 32-bit IEEE 754 inputs `(x, y)` and rotation angle `z`.
 4.  **Dual-Port RAMs:**
-    -   Stores intermediate results between pipeline stages.
-    -   Configured for 64-bit width (32-bit Real + 32-bit Imaginary) per address.
+    -   Used between stages to store intermediate results.
+    -   **Configuration:** Standard **32-bit data width**. 
+    -   *Note:* Real and Imaginary components are processed and stored separately (using parallel RAM instances) to fit within standard FPGA Block RAM configurations (M10K).
 5.  **Address Generation Unit (AGU):**
     -   Calculates read/write addresses and ROM lookup indices for rotation angles.
 
@@ -41,9 +40,8 @@ The design follows a **Pipelined Architecture** (Decimation-In-Time) consisting 
 -   **Points (N):** 1024
 -   **Algorithm:** Radix-2 Decimation-In-Time (DIT).
 -   **Data Format:** **IEEE 754 Single Precision Floating-Point (32-bit)**.
-    -   Input: 64-bit Complex (32-bit Real + 32-bit Imaginary).
-    -   Output: 64-bit Complex (32-bit Real + 32-bit Imaginary).
--   **Precision:** High dynamic range suitable for scientific computing and DSP applications requiring high accuracy.
+    -   Processing: Parallel 32-bit Real and 32-bit Imaginary datapaths.
+-   **Memory:** 32-bit width Dual-Port RAMs.
 -   **Pipeline Stages:** 10 stages.
 -   **Optimization:** Multiplier-less complex rotation using CORDIC.
 
@@ -54,3 +52,4 @@ cordic-fft-fp/
 ├── rtl/                # Source Verilog/SystemVerilog files
 ├── tb/                 # Testbenches
 ├── sim/                # Simulation scripts & waveforms
+├── scripts/            # Python scripts for Golden Reference (numpy)
