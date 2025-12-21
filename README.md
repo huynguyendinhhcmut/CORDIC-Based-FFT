@@ -83,8 +83,6 @@ The generated data is quantized into **32-bit Hex (IEEE-754 Single Precision)** 
 
 > *Note: The Python FFT analysis confirms that despite the time-domain chaos, the frequency components (1MHz, 5MHz, and 12.3MHz) are distinctly resolvable, validating the input quality.*
 
-<img width="1907" height="957" alt="fft" src="https://github.com/user-attachments/assets/c43f2433-9936-475e-b60d-223b93cfe119" />
-
 ### 2. Golden Reference Model
 
 **Script:** `scripts/test_fft/find_bit_reverse_pairs.py`
@@ -262,7 +260,7 @@ cordic-fft-fp/
 
 ## 📝 Final Result
 
-<img width="1400" height="700" alt="fft_peaks_analysis" src="https://github.com/user-attachments/assets/cbb656aa-ec90-4f77-a830-9693e363b226" />
+<img width="1920" height="1920" alt="Output CORDIC-based FFT" src="https://github.com/user-attachments/assets/457bf45e-2865-4886-90a3-c77cd536392f" />
 
 ---
 
