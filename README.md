@@ -71,7 +71,6 @@ cordic-based-fft/
 │   ├── butterfly.sv
 │   ├── comparator.sv
 │   ├── cordic.sv
-│   ├── cordic.sv:Zone.Identifier
 │   ├── delay_23.sv
 │   ├── dual_port_ram.sv
 │   ├── fft.sv
@@ -102,7 +101,6 @@ cordic-based-fft/
 │   ├── check_cordic.py
 │   ├── check_reordering.py
 │   ├── dmem_init_file.txt
-│   ├── output_fft.txt:Zone.Identifier
 │   ├── output_fft_stage1.txt
 │   └── test_fft
 │       ├── fft.py
