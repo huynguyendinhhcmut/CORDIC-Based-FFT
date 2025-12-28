@@ -1,11 +1,11 @@
-# 32-bit Floating-Point CORDIC-Based 1024-Point FFT Processor <img src="https://flagcdn.com/w40/vn.png" alt="Vietnam Flag" /> <img width="35" height="1701" alt="image" src="https://github.com/user-attachments/assets/03c893a9-9bea-4d26-b10c-aeb074b9aa2d" />
+# 32-bit Floating-Point and Fixed-Point CORDIC-Based 1024-Point FFT Processor <img src="https://flagcdn.com/w40/vn.png" alt="Vietnam Flag" /> <img width="35" height="1701" alt="image" src="https://github.com/user-attachments/assets/03c893a9-9bea-4d26-b10c-aeb074b9aa2d" />
 
 
 ## 📌 Overview
 
-This repository contains the RTL source code (SystemVerilog) for a **1024-point Radix-2 Fast Fourier Transform (FFT)** processor utilizing **IEEE 754 Single Precision Floating-Point (32-bit)** arithmetic.
+This repository contains the RTL source code (SystemVerilog) for a **1024-point Radix-2 Fast Fourier Transform (FFT)** processor utilizing **IEEE 754 Single Precision Floating-Point (32-bit)** and **Fixed-Point Q16.16 (32-bit)** arithmetic.
 
-This design prioritizes high precision and a wide dynamic range, effectively mitigating the overflow issues often associated with fixed-point implementations. A key feature is the use of a **Floating-Point CORDIC** algorithm to perform complex phase rotations, thereby eliminating the need for expensive hardware multipliers.
+This design prioritizes high precision and a wide dynamic range, effectively mitigating the overflow issues often associated with fixed-point implementations. A key feature is the use of a **CORDIC** algorithm to perform complex phase rotations, thereby eliminating the need for expensive hardware multipliers.
 
 This project was developed as a Capstone Project 2 at **Ho Chi Minh City University of Technology (HCMUT)**.
 
@@ -13,7 +13,7 @@ This project was developed as a Capstone Project 2 at **Ho Chi Minh City Univers
 
 * **FFT Size:** 1024 points.
 * **Architecture:** 10-Stage Pipeline (Decimation-In-Time).
-* **Data Format:** IEEE 754 Floating-Point 32-bit.
+* **Data Format:** IEEE 754 Floating-Point 32-bit and Fixed-Point Q16.16
 * **Sampling Frequency (Fs):** 100 kHz.
 * **Rotation Algorithm:** CORDIC (Vector Rotation Mode).
 * **Memory:** 32-bit Dual-Port RAM (Parallel Real/Imaginary processing).
@@ -48,7 +48,7 @@ To ensure hardware accuracy, the verification process relies on a **Python Co-Si
     * Sine waves at **2 kHz** and **10 kHz**.
     * A single-tone noise interference at **24.6 kHz**.
     * Additive White Gaussian Noise.
-    This data is quantized into 32-bit Hex (IEEE 754) format for the Testbench.
+    This data is quantized into 32-bit Hex format for the Testbench.
 
 2.  **Verification Method:**
     The output frequency spectrum from the RTL Core is compared directly against the reference result calculated by Python's `numpy.fft` library (Golden Reference).
@@ -57,7 +57,12 @@ To ensure hardware accuracy, the verification process relies on a **Python Co-Si
 The figure below demonstrates a perfect match between the Python model and the Hardware Core. The RTL Core accurately resolves the **2 kHz and 10 kHz** frequency components and correctly identifies the **24.6 kHz** noise peak with precise magnitude.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/457bf45e-2865-4886-90a3-c77cd536392f" alt="FFT Result Verification" width="100%"/>
+  Input data:
+    <img width="1400" height="800" alt="fft_python" src="https://github.com/user-attachments/assets/50dac5e5-f008-4ca6-b5b6-1f5e9e204584" />
+  Floating-Point Output:
+    <img width="1400" height="700" alt="fft_peaks_analysis" src="https://github.com/user-attachments/assets/70a55c75-6a80-4e34-8b4f-d007a1061352" />
+  Fixed-Point Output:
+    <img width="1907" height="944" alt="fft_final_fixed_point" src="https://github.com/user-attachments/assets/a5a9c52a-193f-40fb-98e8-a23149564498" />
 </p>
 
 ## 📂 Directory Structure
@@ -120,4 +125,56 @@ cordic-based-fft/
     ├── output_fft.txt
     └── rtl_files.f
 ```
-**Note:** Simulation may takes over an hour.
+```text
+cordic-based-fft-fixed-point/
+├── dv
+│   ├── tb_cordic.sv
+│   └── tb_fft.sv
+├── rtl
+│   ├── butterfly.sv
+│   ├── comparator.sv
+│   ├── cordic.sv
+│   ├── delay_23.sv
+│   ├── dual_port_ram.sv
+│   ├── fft.sv
+│   ├── fpu_add_sub.sv
+│   ├── fullAdder32b.sv
+│   ├── input_reordering.sv
+│   ├── inversion_sequence.sv
+│   ├── mux4to1.sv
+│   ├── rom_stage_10.sv
+│   ├── rom_stage_3.sv
+│   ├── rom_stage_4.sv
+│   ├── rom_stage_5.sv
+│   ├── rom_stage_6.sv
+│   ├── rom_stage_7.sv
+│   ├── rom_stage_8.sv
+│   ├── rom_stage_9.sv
+│   ├── stage_1.sv
+│   ├── stage_10.sv
+│   ├── stage_2.sv
+│   ├── stage_3.sv
+│   ├── stage_4.sv
+│   ├── stage_5.sv
+│   ├── stage_6.sv
+│   ├── stage_7.sv
+│   ├── stage_8.sv
+│   └── stage_9.sv
+├── scripts
+│   ├── check_cordic.py
+│   ├── dmem_init_file.txt
+│   ├── fft_final.py
+│   └── test_fft
+│       ├── fft.png
+│       ├── fft.py
+│       ├── fft_final.py
+│       ├── fft_final_fixed_point.png
+│       └── fft_input_fixed_Q16_16.txt
+└── sim
+    ├── Makefile
+    ├── fft_sim
+    ├── fft_wave.vcd
+    ├── output_fft.txt
+    └── rtl_files.f
+```
+**Note:** Simulation may takes over an hour for Floating-Point.
