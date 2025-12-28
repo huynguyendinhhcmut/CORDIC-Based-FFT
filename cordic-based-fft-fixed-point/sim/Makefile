@@ -74,16 +74,7 @@ run: build
 # Runs Python script to validate simulation results
 # ---------------------------------------------------------
 verify: run
-	@if [ -f $(PYTHON_SCRIPT) ]; then \
-		echo "------------------------------------------------"; \
-		echo " Running Python Verification..."; \
-		$(PYTHON_CMD) $(PYTHON_SCRIPT) $(LOG_FILE) > $(CHECK_REPORT); \
-		echo " Report saved to: $(CHECK_REPORT)"; \
-		echo "------------------------------------------------"; \
-		cat $(CHECK_REPORT); \
-	else \
-		echo " [!] No python script found for $(MODULE) at $(PYTHON_SCRIPT)"; \
-	fi
+	python3 ../scripts/check_cordic.py
 
 # ---------------------------------------------------------
 # Target: wave
